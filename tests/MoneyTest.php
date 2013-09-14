@@ -173,19 +173,28 @@ class MoneyTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers SebastianBergmann\Money\Money::multiply
-     * @covers SebastianBergmann\Money\Money::newMoney
-     * @uses   SebastianBergmann\Money\Money::__construct
-     * @uses   SebastianBergmann\Money\Money::getAmount
-     * @uses   SebastianBergmann\Money\Currency
+     * @covers       SebastianBergmann\Money\Money::multiply
+     * @covers       SebastianBergmann\Money\Money::newMoney
+     * @uses         SebastianBergmann\Money\Money::__construct
+     * @uses         SebastianBergmann\Money\Money::getAmount
+     * @uses         SebastianBergmann\Money\Currency
+     * @dataProvider provideMultiplicationFactor
      */
-    public function testCanBeMultipliedByAFactor()
+    public function testCanBeMultipliedByAFactor($factor, $originalAmount, $multipliedAmount)
     {
-        $a = new Money(1, new Currency('EUR'));
-        $b = $a->multiply(2);
+        $a = new Money($originalAmount, new Currency('EUR'));
+        $b = $a->multiply($factor);
 
-        $this->assertEquals(1, $a->getAmount());
-        $this->assertEquals(2, $b->getAmount());
+        $this->assertEquals($originalAmount, $a->getAmount());
+        $this->assertEquals($multipliedAmount, $b->getAmount());
+    }
+
+    public function provideMultiplicationFactor()
+    {
+        return array(
+            array(2, 1, 2),
+            array(0.9, 5000, 4500),
+        );
     }
 
     /**
@@ -304,5 +313,14 @@ class MoneyTest extends \PHPUnit_Framework_TestCase
         $b = new Money(2, new Currency('USD'));
 
         $a->compareTo($b);
+    }
+
+    public function testCloneMoney()
+    {
+        $a = new Money(1, new Currency('EUR'));
+        $b = clone $a;
+
+        $this->assertEquals($a, $b);
+        $this->assertEquals($a->getCurrency(), $b->getCurrency());
     }
 }

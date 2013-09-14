@@ -156,7 +156,7 @@ class Money
      */
     public function multiply($factor)
     {
-        return $this->newMoney($factor * $this->amount);
+        return $this->newMoney(intval($factor * $this->amount));
     }
 
     /**
